@@ -24,6 +24,7 @@ hs_err_pid*
 
 # Ignore IntelijIDEA personal settings
 .idea/
+*.iml
 
 # Ignore target directories
 commandbus-spec/target/
