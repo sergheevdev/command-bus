@@ -15,6 +15,7 @@ design patterns practices.
 - Add tests and ensure code coverage
 - Add middlewares (logging, units of work, etc.)
 - Add Spring Boot integration
+- Add async and pool-threaded command executors
 
 ### Story
 
