@@ -16,6 +16,8 @@ import static java.util.Objects.requireNonNull;
  * first we need to associate a command name to a concrete class (responsibility of this decorator),
  * and then given that class associate it to a concrete handler implementation.</p>
  *
+ * @see <a href="https://www.informit.com/articles/article.aspx?p=1216151">Joshua Bloch's Effective Java - Item 1
+ * @see <a href="https://www.informit.com/articles/article.aspx?p=1216151&seqNum=4">Joshua Bloch's Effective Java - Item 4
  * @see <a href="https://www.oreilly.com/library/view/design-patterns-elements/0201633612/">Design Patterns: Elements of Reusable Object-Oriented Software - Structural Patterns - Decorator
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -46,10 +48,10 @@ public class CommandHandlerContainerDecorator {
     private final CommandHandlerMappingExtractorDecorator commandNameFromMappingExtractor;
 
     /**
-     * Creates a non thread-safe {@code CommandHandlerContainerDecorator} based on a {@link HashMap}.
+     * Suppress default constructor for non-instantiability.
      */
-    public CommandHandlerContainerDecorator() {
-        this(CommandHandlerContainer.newInstance(), HashMap::new);
+    private CommandHandlerContainerDecorator() {
+        throw new AssertionError();
     }
 
     /**
@@ -67,8 +69,8 @@ public class CommandHandlerContainerDecorator {
      *
      * @throws NullPointerException if the map provided by {@code mapSupplier} is {@code null}
      */
-    public CommandHandlerContainerDecorator(CommandHandlerContainer commandHandlerContainer,
-                                            Supplier<Map<String, Class<? extends CommandHandler>>> mapSupplier) {
+    protected CommandHandlerContainerDecorator(CommandHandlerContainer commandHandlerContainer,
+                                               Supplier<Map<String, Class<? extends CommandHandler>>> mapSupplier) {
         requireNonNull(commandHandlerContainer);
         this.commandHandlerContainer = commandHandlerContainer;
         this.commandNameToHandlerClass = asEmptyMap(mapSupplier);
@@ -150,10 +152,6 @@ public class CommandHandlerContainerDecorator {
      */
     public boolean isContainerEmpty() {
         return commandHandlerContainer.isEmpty();
-    }
-
-    public CommandHandlerContainer getCommandHandlerContainer() {
-        return commandHandlerContainer;
     }
 
 }

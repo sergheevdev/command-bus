@@ -18,8 +18,9 @@ import static java.util.Objects.requireNonNull;
  * because it restricts the types of the instances you can store by prohibiting the storage of
  * any value or key that is not assignable to {@link CommandHandler}.</p>
  *
- * @see <a href="http://www.informit.com/articles/article.aspx?p=2861454&seqNum=8">Joshua Bloch's Effective Java - Item 33
  * @see <a href="https://www.informit.com/articles/article.aspx?p=1216151">Joshua Bloch's Effective Java - Item 1
+ * @see <a href="https://www.informit.com/articles/article.aspx?p=1216151&seqNum=4">Joshua Bloch's Effective Java - Item 4
+ * @see <a href="http://www.informit.com/articles/article.aspx?p=2861454&seqNum=8">Joshua Bloch's Effective Java - Item 33
  */
 public class CommandHandlerContainer {
 
@@ -44,6 +45,13 @@ public class CommandHandlerContainer {
     private final Map<Class<?>, Object> handlerClassToInstance;
 
     /**
+     * Suppress default constructor for non-instantiability.
+     */
+    private CommandHandlerContainer() {
+        throw new AssertionError();
+    }
+
+    /**
      * Creates a {@code CommandHandlerContainer} based on the {@link Map} returned by the
      * provided map supplier {@link Supplier#get()} method.
      *
@@ -57,7 +65,7 @@ public class CommandHandlerContainer {
      * @throws NullPointerException if the map provided by {@code mapSupplier} is {@code null}
      * @throws IllegalArgumentException if the map provided by {@code mapSupplier} is not empty
      */
-    public CommandHandlerContainer(Supplier<Map<Class<?>, Object>> mapSupplier) {
+    protected CommandHandlerContainer(Supplier<Map<Class<?>, Object>> mapSupplier) {
         this.handlerClassToInstance = asEmptyMap(mapSupplier);
     }
 
