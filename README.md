@@ -35,18 +35,18 @@ enough to decide to open source it.
 
 ## Usage
 
-For shortness' sake and in order not to lengthen explanations we are going to discuss
-a really simple example, but in real-world applications those command DTO's contain
-domain objects or the domain model representation correspondent to the layer we're 
-currently working in instead of simple primitive types, also the handlers may have 
-dependencies upon  other objects that provide an entrypoint to the use case execution.
+For shortness' sake and in order not to lengthen explanations, we are going to discuss
+a really simple example, but in real-world applications those command classes contain
+domain objects or the domain model representation correspondent to the layer you're 
+currently working in, instead of simple primitive types, also the handlers may have 
+dependencies upon other objects that may provide an entrypoint to the use case execution.
 
 You may skip this explanation and [check the demo submodule](commandbus-demo/src/main/java/dev/sergheev)
 
 ### Creating command classes
 
-The first one will be the ```SumCommand``` class which will simply contain two numbers
-which we want to sum.
+The first command class will be the ```SumCommand``` class which will simply contain 
+two numbers which we want to sum.
 
 ```java
     /**
@@ -170,9 +170,9 @@ execution, actual and future one's, making it easy to extend our commands.
 
 ### Complex scenarios
 
-In more complex scenarios you may need to modify the registry of commands and handlers
+In more complex scenarios, you may need to modify the registry of command handlers
 in runtime to prevent any service downtime or any other reason, you can create and
-manage the registry yourself and pass it to the builder.
+manage the command registry yourself and pass it to the builder.
 
 ```java
     public class Main {
