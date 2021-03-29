@@ -1,4 +1,4 @@
-package dev.sergheev.commandbus.registry.mapping;
+package dev.sergheev.commandbus.mapping;
 
 import dev.sergheev.commandbus.CommandMapping;
 import dev.sergheev.commandbus.CommandMappings;
@@ -12,7 +12,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * An object that extracts {@link CommandMapping} annotations from a class.
  */
-public class CommandHandlerMappingExtractor {
+public class CommandMappingExtractor {
 
     /**
      * Extracts all the {@link CommandMapping} present in the given class.
@@ -23,7 +23,7 @@ public class CommandHandlerMappingExtractor {
      *
      * @return a list of {@link CommandMapping}
      */
-    public List<CommandMapping> extractCommandMappingsFor(Class<?> givenClass) {
+    public List<CommandMapping> extractMappingsFrom(Class<?> givenClass) {
         requireNonNull(givenClass, "givenClass");
         List<CommandMapping> foundMappings = new ArrayList<>();
         if(givenClass.isAnnotationPresent(CommandMapping.class)) {

@@ -2,92 +2,63 @@ package dev.sergheev.commandbus.registry;
 
 import dev.sergheev.commandbus.Command;
 import dev.sergheev.commandbus.CommandHandler;
-import dev.sergheev.commandbus.container.HeterogeneousContainer;
-import dev.sergheev.commandbus.registry.mapping.CommandHandlerMappingExtractorDecorator;
-import dev.sergheev.commandbus.container.CommandHandlerContainer;
+import dev.sergheev.commandbus.container.Container;
+import dev.sergheev.commandbus.mapping.CommandNameExtractor;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Supplier;
 
 import static java.util.Objects.requireNonNull;
 
 /**
- * Thread safe {@link CommandHandlerRegistry} implementation.
+ * Non-thread safe {@link CommandHandlerRegistry} implementation.
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class ConcurrentCommandHandlerRegistry implements CommandHandlerRegistry {
 
-    public static ConcurrentCommandHandlerRegistry newInstance() {
-        return new ConcurrentCommandHandlerRegistry(CommandHandlerContainer.newInstance(), HashMap::new);
-    }
+    private final Container handlerContainer;
+
+    private final Map<String, Class<? extends CommandHandler>> commandNameToType;
+
+    private final CommandNameExtractor commandNameExtractor;
 
     private final Lock registryLock;
 
-    private final HeterogeneousContainer commandHandlerContainer;
-
-    private final Map<String, Class<? extends CommandHandler>> commandNameToHandlerClass;
-
-    private final CommandHandlerMappingExtractorDecorator commandNameFromMappingExtractor;
-
-    /**
-     * Suppress default constructor for non-instantiability.
-     */
     private ConcurrentCommandHandlerRegistry() {
         throw new AssertionError();
     }
 
-    protected ConcurrentCommandHandlerRegistry(HeterogeneousContainer commandHandlerContainer,
-                                               Supplier<Map<String, Class<? extends CommandHandler>>> mapSupplier) {
+    ConcurrentCommandHandlerRegistry(Container handlerContainer) {
+        this.handlerContainer = requireNonNull(handlerContainer);
+        this.commandNameToType = new HashMap<>();
+        this.commandNameExtractor = new CommandNameExtractor();
         this.registryLock = new ReentrantLock();
-        this.commandHandlerContainer = requireNonNull(commandHandlerContainer);
-        this.commandNameToHandlerClass = asEmptyMap(mapSupplier);
-        this.commandNameFromMappingExtractor = new CommandHandlerMappingExtractorDecorator();
-    }
-
-    private Map<String, Class<? extends CommandHandler>> asEmptyMap(Supplier<Map<String, Class<? extends CommandHandler>>> mapSupplier) {
-        Map<String, Class<? extends CommandHandler>> values = mapSupplier.get();
-        final String message = "The provided supplier must be empty: mapSupplier";
-        if(!values.isEmpty()) throw new IllegalArgumentException(message);
-        return values;
     }
 
     @Override
-    public <C extends Command, R> CommandHandler<C, R> findHandlerFor(String commandName) {
-        requireNonNull(commandName, "commandName");
+    public <T extends CommandHandler> T registerHandler(Class<T> type, Object instance) {
+        requireNonNull(type, "type");
+        List<String> commandNames = commandNameExtractor.extractCommandNamesFor(type);
         registryLock.lock();
         try {
-            Class<? extends CommandHandler> type = commandNameToHandlerClass.get(commandName);
-            return commandHandlerContainer.get(type);
+            commandNames.forEach(name -> commandNameToType.put(name, type));
+            return handlerContainer.put(type, instance);
         } finally {
             registryLock.unlock();
         }
     }
 
     @Override
-    public void registerHandler(Class<? extends CommandHandler> type, Object instance) {
+    public <T extends CommandHandler> T unregisterHandler(Class<T> type) {
         requireNonNull(type, "type");
-        List<String> commandNames = commandNameFromMappingExtractor.extractCommandNamesFor(type);
+        List<String> commandNames = commandNameExtractor.extractCommandNamesFor(type);
         registryLock.lock();
         try {
-            commandNames.forEach(name -> commandNameToHandlerClass.put(name, type));
-            commandHandlerContainer.put(type, instance);
-        } finally {
-            registryLock.unlock();
-        }
-    }
-
-    @Override
-    public void unregisterHandler(Class<? extends CommandHandler> type) {
-        requireNonNull(type, "type");
-        List<String> commandNames = commandNameFromMappingExtractor.extractCommandNamesFor(type);
-        registryLock.lock();
-        try {
-            commandNames.forEach(commandNameToHandlerClass::remove);
-            commandHandlerContainer.remove(type);
+            commandNames.forEach(commandNameToType::remove);
+            return handlerContainer.remove(type);
         } finally {
             registryLock.unlock();
         }
@@ -95,9 +66,43 @@ public class ConcurrentCommandHandlerRegistry implements CommandHandlerRegistry 
 
     @Override
     public <T extends CommandHandler> T getHandler(Class<T> type) {
+        requireNonNull(type, "type");
         registryLock.lock();
         try {
-            return commandHandlerContainer.get(type);
+            return handlerContainer.get(type);
+        } finally {
+            registryLock.unlock();
+        }
+    }
+
+    @Override
+    public <C extends Command, R> CommandHandler<C, R> getHandlerFor(String commandName) {
+        requireNonNull(commandName, "commandName");
+        registryLock.lock();
+        try {
+            Class<? extends CommandHandler> handlerType = commandNameToType.get(commandName);
+            return handlerContainer.get(handlerType);
+        } finally {
+            registryLock.unlock();
+        }
+    }
+
+    @Override
+    public boolean containsHandler(Class<? extends CommandHandler> type) {
+        requireNonNull(type, "type");
+        registryLock.lock();
+        try {
+            return handlerContainer.contains(type);
+        } finally {
+            registryLock.unlock();
+        }
+    }
+
+    @Override
+    public void clearRegistry() {
+        registryLock.lock();
+        try {
+            handlerContainer.clear();
         } finally {
             registryLock.unlock();
         }
@@ -107,7 +112,7 @@ public class ConcurrentCommandHandlerRegistry implements CommandHandlerRegistry 
     public boolean isRegistryEmpty() {
         registryLock.lock();
         try {
-            return commandHandlerContainer.isEmpty();
+            return handlerContainer.isEmpty();
         } finally {
             registryLock.unlock();
         }
@@ -117,7 +122,7 @@ public class ConcurrentCommandHandlerRegistry implements CommandHandlerRegistry 
     public int registrySize() {
         registryLock.lock();
         try {
-            return commandHandlerContainer.size();
+            return handlerContainer.size();
         } finally {
             registryLock.unlock();
         }

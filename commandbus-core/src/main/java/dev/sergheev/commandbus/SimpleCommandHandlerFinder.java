@@ -22,7 +22,7 @@ public class SimpleCommandHandlerFinder implements CommandHandlerFinder {
      * @return a {@link CommandHandler} implementation associated to the given command name
      */
     public <C extends Command, R> CommandHandler<C, R> findHandlerFor(String commandName) {
-        return commandHandlerRegistry.findHandlerFor(commandName);
+        return commandHandlerRegistry.getHandlerFor(commandName);
     }
 
 }

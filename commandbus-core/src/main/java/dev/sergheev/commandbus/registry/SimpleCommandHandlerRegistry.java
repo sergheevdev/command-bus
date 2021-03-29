@@ -2,14 +2,12 @@ package dev.sergheev.commandbus.registry;
 
 import dev.sergheev.commandbus.Command;
 import dev.sergheev.commandbus.CommandHandler;
-import dev.sergheev.commandbus.container.HeterogeneousContainer;
-import dev.sergheev.commandbus.registry.mapping.CommandHandlerMappingExtractorDecorator;
-import dev.sergheev.commandbus.container.CommandHandlerContainer;
+import dev.sergheev.commandbus.container.Container;
+import dev.sergheev.commandbus.mapping.CommandNameExtractor;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 import static java.util.Objects.requireNonNull;
 
@@ -19,73 +17,70 @@ import static java.util.Objects.requireNonNull;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class SimpleCommandHandlerRegistry implements CommandHandlerRegistry {
 
-    public static SimpleCommandHandlerRegistry newInstance() {
-        return new SimpleCommandHandlerRegistry(CommandHandlerContainer.newInstance(), HashMap::new);
-    }
+    private final Container handlerContainer;
 
-    private final HeterogeneousContainer commandHandlerContainer;
+    private final Map<String, Class<? extends CommandHandler>> commandNameToType;
 
-    private final Map<String, Class<? extends CommandHandler>> commandNameToHandlerClass;
+    private final CommandNameExtractor commandNameExtractor;
 
-    private final CommandHandlerMappingExtractorDecorator commandNameFromMappingExtractor;
-
-    /**
-     * Suppress default constructor for non-instantiability.
-     */
     private SimpleCommandHandlerRegistry() {
         throw new AssertionError();
     }
 
-    protected SimpleCommandHandlerRegistry(HeterogeneousContainer commandHandlerContainer,
-                                           Supplier<Map<String, Class<? extends CommandHandler>>> mapSupplier) {
-        this.commandHandlerContainer = requireNonNull(commandHandlerContainer);
-        this.commandNameToHandlerClass = asEmptyMap(mapSupplier);
-        this.commandNameFromMappingExtractor = new CommandHandlerMappingExtractorDecorator();
-    }
-
-    private Map<String, Class<? extends CommandHandler>> asEmptyMap(Supplier<Map<String, Class<? extends CommandHandler>>> mapSupplier) {
-        Map<String, Class<? extends CommandHandler>> values = mapSupplier.get();
-        final String message = "The provided supplier must be empty: mapSupplier";
-        if(!values.isEmpty()) throw new IllegalArgumentException(message);
-        return values;
+    SimpleCommandHandlerRegistry(Container handlerContainer) {
+        this.handlerContainer = requireNonNull(handlerContainer);
+        this.commandNameToType = new HashMap<>();
+        this.commandNameExtractor = new CommandNameExtractor();
     }
 
     @Override
-    public <C extends Command, R> CommandHandler<C, R> findHandlerFor(String commandName) {
-        requireNonNull(commandName, "commandName");
-        Class<? extends CommandHandler> type = commandNameToHandlerClass.get(commandName);
-        return commandHandlerContainer.get(type);
-    }
-
-    @Override
-    public void registerHandler(Class<? extends CommandHandler> type, Object instance) {
+    public <T extends CommandHandler> T registerHandler(Class<T> type, Object instance) {
         requireNonNull(type, "type");
-        List<String> commandNames = commandNameFromMappingExtractor.extractCommandNamesFor(type);
-        commandNames.forEach(name -> commandNameToHandlerClass.put(name, type));
-        commandHandlerContainer.put(type, instance);
+        List<String> commandNames = commandNameExtractor.extractCommandNamesFor(type);
+        commandNames.forEach(name -> commandNameToType.put(name, type));
+        return handlerContainer.put(type, instance);
     }
 
     @Override
-    public void unregisterHandler(Class<? extends CommandHandler> type) {
+    public <T extends CommandHandler> T unregisterHandler(Class<T> type) {
         requireNonNull(type, "type");
-        List<String> commandNames = commandNameFromMappingExtractor.extractCommandNamesFor(type);
-        commandNames.forEach(commandNameToHandlerClass::remove);
-        commandHandlerContainer.remove(type);
+        List<String> commandNames = commandNameExtractor.extractCommandNamesFor(type);
+        commandNames.forEach(commandNameToType::remove);
+        return handlerContainer.remove(type);
     }
 
     @Override
     public <T extends CommandHandler> T getHandler(Class<T> type) {
-        return commandHandlerContainer.get(type);
+        requireNonNull(type, "type");
+        return handlerContainer.get(type);
+    }
+
+    @Override
+    public <C extends Command, R> CommandHandler<C, R> getHandlerFor(String commandName) {
+        requireNonNull(commandName, "commandName");
+        Class<? extends CommandHandler> handlerType = commandNameToType.get(commandName);
+        return handlerContainer.get(handlerType);
+    }
+
+    @Override
+    public boolean containsHandler(Class<? extends CommandHandler> type) {
+        requireNonNull(type, "type");
+        return handlerContainer.contains(type);
+    }
+
+    @Override
+    public void clearRegistry() {
+        handlerContainer.clear();
     }
 
     @Override
     public boolean isRegistryEmpty() {
-        return commandHandlerContainer.isEmpty();
+        return handlerContainer.isEmpty();
     }
 
     @Override
     public int registrySize() {
-        return commandHandlerContainer.size();
+        return handlerContainer.size();
     }
 
 }
