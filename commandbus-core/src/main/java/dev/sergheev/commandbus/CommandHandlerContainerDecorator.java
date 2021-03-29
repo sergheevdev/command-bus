@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
 import static java.util.Objects.requireNonNull;
@@ -41,6 +43,8 @@ public class CommandHandlerContainerDecorator {
         return new CommandHandlerContainerDecorator(CommandHandlerContainer.newConcurrentInstance(), ConcurrentHashMap::new);
     }
 
+    private final Lock decoratorLock;
+
     private final CommandHandlerContainer commandHandlerContainer;
 
     private final Map<String, Class<? extends CommandHandler>> commandNameToHandlerClass;
@@ -71,8 +75,8 @@ public class CommandHandlerContainerDecorator {
      */
     protected CommandHandlerContainerDecorator(CommandHandlerContainer commandHandlerContainer,
                                                Supplier<Map<String, Class<? extends CommandHandler>>> mapSupplier) {
-        requireNonNull(commandHandlerContainer);
-        this.commandHandlerContainer = commandHandlerContainer;
+        this.decoratorLock = new ReentrantLock();
+        this.commandHandlerContainer = requireNonNull(commandHandlerContainer);
         this.commandNameToHandlerClass = asEmptyMap(mapSupplier);
         this.commandNameFromMappingExtractor = new CommandHandlerMappingExtractorDecorator();
     }
@@ -101,10 +105,15 @@ public class CommandHandlerContainerDecorator {
      *
      * @return the {@link CommandHandler} concrete instance associated to the given command name.
      */
-    public <C extends Command, A> CommandHandler<C, A> findHandlerFor(String commandName) {
+    public <C extends Command, R> CommandHandler<C, R> findHandlerFor(String commandName) {
         requireNonNull(commandName, "commandName");
-        Class<? extends CommandHandler> type = commandNameToHandlerClass.get(commandName);
-        return commandHandlerContainer.get(type);
+        decoratorLock.lock();
+        try {
+            Class<? extends CommandHandler> type = commandNameToHandlerClass.get(commandName);
+            return commandHandlerContainer.get(type);
+        } finally {
+            decoratorLock.unlock();
+        }
     }
 
     /**
@@ -117,9 +126,14 @@ public class CommandHandlerContainerDecorator {
      */
     public void registerHandler(Class<? extends CommandHandler> type, Object instance) {
         requireNonNull(type, "type");
+        decoratorLock.lock();
         List<String> commandNames = commandNameFromMappingExtractor.extractCommandNamesFor(type);
         commandNames.forEach(name -> commandNameToHandlerClass.put(name, type));
-        commandHandlerContainer.register(type, instance);
+        try {
+            commandHandlerContainer.register(type, instance);
+        } finally {
+            decoratorLock.unlock();
+        }
     }
 
     /**
@@ -131,9 +145,14 @@ public class CommandHandlerContainerDecorator {
      */
     public void unregisterHandler(Class<? extends CommandHandler> type) {
         requireNonNull(type, "type");
+        decoratorLock.lock();
         List<String> commandNames = commandNameFromMappingExtractor.extractCommandNamesFor(type);
         commandNames.forEach(commandNameToHandlerClass::remove);
-        commandHandlerContainer.unregister(type);
+        try {
+            commandHandlerContainer.unregister(type);
+        } finally {
+            decoratorLock.unlock();
+        }
     }
 
     /**
