@@ -177,23 +177,23 @@ manage the registry yourself and pass it to the builder.
     public class Main {
 
         public static void main(String[] args) {
-            // Manual instantiation management of the registry
+            // Registry created and managed by the client
             CommandHandlerRegistry registry = CommandHandlerRegistryFactory.newRegistry();
             registry.registerHandler(SumCommandHandler.class, new SumCommandHandler());
 
-            // Instantiation of the bus using the given registry
+            // Instantiating bus using client registry
             CommandBus commandBus = SimpleCommandBusBuilder.create().withRegistry(registry).build();
 
-            // Creating and executing the summation command
+            // Creating and executing the summation command (provided before bus creation)
             int firstNumber = 15;
             int secondNumber = 5;
             Command sumCommand = new SumCommand(firstNumber, secondNumber);
             int sumResult = commandBus.execute(sumCommand);
 
-            // Now imagine that we need to add a new command and handler in runtime or after instantiation
+            // Imagine we need to add another command and handler at runtime (we add it to our manually managed registry)
             registry.registerHandler(PrintLineCommandHandler.class, new PrintLineCommandHandler());
 
-            // Creating and executing the print line command added after bus instantiation
+            // Creating and executing the print line command (provided after bus creation or at runtime)
             String message = String.format("Result of %d + %d is %d %n", firstNumber, secondNumber, sumResult);
             Command printLineCommand = new PrintLineCommand(message);
             commandBus.execute(printLineCommand);
