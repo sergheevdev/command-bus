@@ -167,6 +167,41 @@ execution, actual and future one's, making it easy to extend our commands.
     }
 ```
 
+### Complex scenarios
+
+In more complex scenarios you may need to modify the registry of commands and handlers
+in runtime to prevent any service downtime or any other reason, you can create and
+manage the registry yourself and pass it to the builder.
+
+```java
+    public class Main {
+
+        public static void main(String[] args) {
+            // Manual instantiation management of the registry
+            CommandHandlerRegistry registry = CommandHandlerRegistryFactory.newRegistry();
+            registry.registerHandler(SumCommandHandler.class, new SumCommandHandler());
+
+            // Instantiation of the bus using the given registry
+            CommandBus commandBus = SimpleCommandBusBuilder.create().withRegistry(registry).build();
+
+            // Creating and executing the summation command
+            int firstNumber = 15;
+            int secondNumber = 5;
+            Command sumCommand = new SumCommand(firstNumber, secondNumber);
+            int sumResult = commandBus.execute(sumCommand);
+
+            // Now imagine that we need to add a new command and handler in runtime or after instantiation
+            registry.registerHandler(PrintLineCommandHandler.class, new PrintLineCommandHandler());
+
+            // Creating and executing the print line command added after bus instantiation
+            String message = String.format("Result of %d + %d is %d %n", firstNumber, secondNumber, sumResult);
+            Command printLineCommand = new PrintLineCommand(message);
+            commandBus.execute(printLineCommand);
+        }
+
+    }
+```
+
 The additional documentation for individual features can be found in the source code
 javadocs. For additional help, you can create an issue, and I will try to answer as
 fast as possible.
