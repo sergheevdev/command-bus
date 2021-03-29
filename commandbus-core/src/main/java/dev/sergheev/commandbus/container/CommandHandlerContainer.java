@@ -1,4 +1,6 @@
-package dev.sergheev.commandbus;
+package dev.sergheev.commandbus.container;
+
+import dev.sergheev.commandbus.CommandHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,21 +10,16 @@ import java.util.function.Supplier;
 import static java.util.Objects.requireNonNull;
 
 /**
- * A simple {@link CommandHandler} heterogeneous container implementation.
+ * A simple {@link HeterogeneousContainer} implementation restricted to {@link CommandHandler} instances.
  *
- * <p>Unlike a regular container, this container allows to have different types for the keys and
- * also to hold values of many (i.e. heterogeneous) types. The type of token is used to guarantee
- * that the type of the key agrees with its value.</p>
- *
- * <p>This heterogeneous container implementation is a concretion of a more generic container,
- * because it restricts the types of the instances you can store by prohibiting the storage of
- * any value or key that is not assignable to {@link CommandHandler}.</p>
+ * <p>This heterogeneous container implementation is specific to {@link CommandHandler}, because it
+ * restricts the types of instances it can hold, by prohibiting the storage of any key type and
+ * instance type that is not assignable to {@link CommandHandler}.
  *
  * @see <a href="https://www.informit.com/articles/article.aspx?p=1216151">Joshua Bloch's Effective Java - Item 1
  * @see <a href="https://www.informit.com/articles/article.aspx?p=1216151&seqNum=4">Joshua Bloch's Effective Java - Item 4
- * @see <a href="http://www.informit.com/articles/article.aspx?p=2861454&seqNum=8">Joshua Bloch's Effective Java - Item 33
  */
-public class CommandHandlerContainer {
+public class CommandHandlerContainer implements HeterogeneousContainer {
 
     /**
      * Creates a non thread-safe {@code CommandHandlerContainer} based on a {@link HashMap}.
@@ -87,7 +84,7 @@ public class CommandHandlerContainer {
     }
 
     /**
-     * Stores the given instance in the container.
+     * Stores the given {@link CommandHandler} instance.
      *
      * @param type a type key
      * @param instance a instance value
@@ -97,7 +94,8 @@ public class CommandHandlerContainer {
      * @throws IllegalArgumentException if {@code type} and {@code instance} type are not equal
      * @throws IllegalArgumentException if {@code type} is not assignable to {@link CommandHandler}
      */
-    public void register(Class<?> type, Object instance) {
+    @Override
+    public void put(Class<?> type, Object instance) {
         requireNonNull(type, "type");
         requireNonNull(instance, "instance");
         requireTypeMatchesInstanceType(type, instance);
@@ -106,21 +104,22 @@ public class CommandHandlerContainer {
     }
 
     /**
-     * Removes the instance from the container.
+     * Removes the stored {@link CommandHandler} instance associated to the {@code type}.
      *
      * @param type a type key
      *
      * @throws NullPointerException if {@code type} is {@code null}
      * @throws IllegalArgumentException if {@code type} is not assignable to {@link CommandHandler}
      */
-    public void unregister(Class<?> type) {
+    @Override
+    public void remove(Class<?> type) {
         requireNonNull(type, "type");
         requireTypeAssignableToCommandHandler(type);
         handlerClassToInstance.remove(type);
     }
 
     /**
-     * Retrieves the stored {@link CommandHandler} concrete implementation from the container.
+     * Retrieves the stored {@link CommandHandler} instance.
      *
      * @param type a type key
      *
@@ -129,6 +128,7 @@ public class CommandHandlerContainer {
      *
      * @return a concrete implementation of {@link CommandHandler} of the key type.
      */
+    @Override
     public <T> T get(Class<T> type) {
         requireNonNull(type, "type");
         requireTypeAssignableToCommandHandler(type);
@@ -136,10 +136,19 @@ public class CommandHandlerContainer {
     }
 
     /**
-     * @return true if the container is empty
+     * @return true if there are no {@link CommandHandler} instances stored.
      */
+    @Override
     public boolean isEmpty() {
         return handlerClassToInstance.isEmpty();
+    }
+
+    /**
+     * @return the amount of stored {@link CommandHandler} instances.
+     */
+    @Override
+    public int size() {
+        return handlerClassToInstance.size();
     }
 
     private void requireTypeMatchesInstanceType(Class<?> type, Object instance) {

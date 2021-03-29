@@ -1,7 +1,11 @@
 package dev.sergheev.commandbus;
 
+import dev.sergheev.commandbus.registry.CommandHandlerRegistry;
+import dev.sergheev.commandbus.registry.CommandHandlerRegistryFactory;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A simple API for the construction of {@link SimpleCommandBus}.
@@ -18,10 +22,12 @@ public class SimpleCommandBusBuilder {
     }
 
     private boolean isConcurrent;
+    private CommandHandlerRegistry customRegistry;
     private final Map<Class<? extends CommandHandler>, Object> classToInstance;
 
     public SimpleCommandBusBuilder() {
         this.isConcurrent = false;
+        this.customRegistry = null;
         this.classToInstance = new HashMap<>();
     }
 
@@ -40,15 +46,26 @@ public class SimpleCommandBusBuilder {
         return this;
     }
 
+    public SimpleCommandBusBuilder withRegistry(CommandHandlerRegistry customRegistry) {
+        this.customRegistry = customRegistry;
+        return this;
+    }
+
     public SimpleCommandBus build() {
-        CommandHandlerContainerDecorator commandHandlerContainerDecorator;
-        if(isConcurrent) {
-            commandHandlerContainerDecorator = CommandHandlerContainerDecorator.newConcurrentInstance();
+        CommandHandlerRegistry commandHandlerRegistry;
+
+        if(Objects.isNull(customRegistry)) {
+            if(isConcurrent) {
+                commandHandlerRegistry = CommandHandlerRegistryFactory.newConcurrentRegistry();
+            } else {
+                commandHandlerRegistry = CommandHandlerRegistryFactory.newRegistry();
+            }
         } else {
-            commandHandlerContainerDecorator = CommandHandlerContainerDecorator.newInstance();
+            commandHandlerRegistry = customRegistry;
         }
-        classToInstance.forEach(commandHandlerContainerDecorator::registerHandler);
-        CommandHandlerFinder commandHandlerFinder = new SimpleCommandHandlerFinder(commandHandlerContainerDecorator);
+
+        classToInstance.forEach(commandHandlerRegistry::registerHandler);
+        CommandHandlerFinder commandHandlerFinder = new SimpleCommandHandlerFinder(commandHandlerRegistry);
 
         return new SimpleCommandBus(commandHandlerFinder);
     }

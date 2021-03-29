@@ -1,4 +1,6 @@
-package dev.sergheev.commandbus;
+package dev.sergheev.commandbus.registry.mapping;
+
+import dev.sergheev.commandbus.CommandMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,12 +8,12 @@ import java.util.List;
 import static java.util.Objects.requireNonNull;
 
 /**
- * A simple decorator around the {@link CommandHandlerMappingExtractor} class.
+ * A simple decorator for {@link CommandHandlerMappingExtractor} that extracts command names
+ * from {@link CommandMapping} present in a class.
  *
- * <p>The purpose of this decorator implementation is to add another layer of abstraction to
- * {@link CommandHandlerMappingExtractor}, because we want to extract command names from
- * mappings, but first we need to obtain those mappings, which is done by the decorated class
- * {@link CommandHandlerMappingExtractor}.</p>
+ * <p>The purpose of this decorator is to add another layer of abstraction to extract command
+ * names from mappings, but first we need to obtains those mappings, which is done by the
+ * decorated {@link CommandHandlerMappingExtractor} class.
  *
  * @see <a href="https://www.oreilly.com/library/view/design-patterns-elements/0201633612/">Design Patterns: Elements of Reusable Object-Oriented Software Structural Patterns Decorator
  */
@@ -24,7 +26,7 @@ public class CommandHandlerMappingExtractorDecorator {
     }
 
     public CommandHandlerMappingExtractorDecorator(CommandHandlerMappingExtractor mappingExtractor) {
-        this.mappingExtractor = new CommandHandlerMappingExtractor();
+        this.mappingExtractor = mappingExtractor;
     }
 
     /**

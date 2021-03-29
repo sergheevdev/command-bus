@@ -1,4 +1,7 @@
-package dev.sergheev.commandbus;
+package dev.sergheev.commandbus.registry.mapping;
+
+import dev.sergheev.commandbus.CommandMapping;
+import dev.sergheev.commandbus.CommandMappings;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,22 +10,18 @@ import java.util.List;
 import static java.util.Objects.requireNonNull;
 
 /**
- * A {@link CommandMapping} extractor implementation.
- *
- * <p>A simple class that deals with the extraction of {@link CommandMapping}
- * annotations present in a given class</p>
- *
+ * An object that extracts {@link CommandMapping} annotations from a class.
  */
 public class CommandHandlerMappingExtractor {
 
     /**
-     * Extracts a list of {@link CommandMapping} associated the given class.
+     * Extracts all the {@link CommandMapping} present in the given class.
      *
-     * @param givenClass the given class from which mappings will be extracted
+     * @param givenClass the class from which mappings will be extracted
      *
      * @throws NullPointerException if {@code givenClass} is {@code null}
      *
-     * @return a list of {@link CommandMapping} that {@code givenClass} has
+     * @return a list of {@link CommandMapping}
      */
     public List<CommandMapping> extractCommandMappingsFor(Class<?> givenClass) {
         requireNonNull(givenClass, "givenClass");
