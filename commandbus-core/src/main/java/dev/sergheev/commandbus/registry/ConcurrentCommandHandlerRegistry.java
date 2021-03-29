@@ -14,7 +14,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import static java.util.Objects.requireNonNull;
 
 /**
- * Non-thread safe {@link CommandHandlerRegistry} implementation.
+ * Thread-safe {@link CommandHandlerRegistry} implementation.
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class ConcurrentCommandHandlerRegistry implements CommandHandlerRegistry {
