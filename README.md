@@ -9,7 +9,7 @@ design patterns practices.
 ### Features
 - Thread-safety
 - Custom annotations
-- Highly flexibly library
+- Highly flexible and extensible library
 
 ### TODO
 - Add tests and ensure code coverage
