@@ -1,21 +1,27 @@
 # CommandBus
 
+[![MIT License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/sergheevdev/command-bus/blob/main/LICENSE)
+
 ## Introduction
 
-**CommandBus** is a lightweight, thread-safe, command bus (a.k.a **command dispatcher**),
-this library provides a unified entry point for your command execution promoting best
-design patterns practices.
+**CommandBus** is a simple, lightweight and thread-safe, command bus (also known as
+a **command dispatcher**). A command bus hands over commands to their handlers, and
+may also perform other actions (i.e. validate data, wrap handler in a database 
+transaction, provide queueing options, etc).
+
+This library provides a unified entry point for your commands execution, promoting
+best software design practices.
 
 ### Features
-- Thread-safety
-- Custom annotations
-- Highly flexible and extensible library
+- Thread-safety (for concurrent operations when already serving, i.e. runtime loading of handlers).
+- Custom annotations (to ease the handler-command association).
+- Highly flexible and extensible library (the client can override default implementations).
 
 ### TODO
-- Add tests and ensure code coverage
-- Add middlewares (logging, units of work, etc.)
-- Add Spring Boot integration
-- Add async and pool-threaded command executors
+- Add tests and ensure code coverage (with JUnit and Mockito).
+- Add middlewares (for multiple purposes, i.e. logging, units of work, etc).
+- Add Spring Boot integration (handler-command provisioning, custom builder).
+- Add async and multi-threaded command executors.
 
 ### Story
 
@@ -28,20 +34,23 @@ enough to decide to open source it.
 
 ## Getting started
 
-1. Compile the library with [maven](https://maven.apache.org/)
-2. Add the packaged **JAR** as a provided dependency to your project
+1. Package the library with [maven](https://maven.apache.org/) into a JAR file.
+2. Add the packaged **JAR** as a provided dependency to your project.
+3. Enjoy your new command bus library!
 
 **NOTE**: make sure you do not include the demo submodule when compiling
 
 ## Usage
 
 For shortness' sake and in order not to lengthen explanations, we are going to discuss
-a really simple example, but in real-world applications those command classes contain
-domain objects or the domain model representation correspondent to the layer you're 
-currently working in, instead of simple primitive types, also the handlers may have 
-dependencies upon other objects that may provide an entrypoint to the use case execution.
+a really simple example.
 
-You may skip this explanation and [check the demo submodule](commandbus-demo/src/main/java/dev/sergheev)
+In real-world applications those command classes may contain domain objects or the model
+representation associated to the layer we're currently working in, instead of simple
+primitive types, also the handlers may have dependencies upon other objects (i.e. services)
+that may provide an entrypoint to your concrete use case execution.
+
+You may skip this explanation (not recommended) and go straight to [check the demo submodule](commandbus-demo/src/main/java/dev/sergheev)
 
 ### Creating command classes
 
@@ -97,8 +106,8 @@ message to print.
 
 ### Creating the handlers
 
-Now that we have created the commands, we might notice that they are simple DTO's they don't
-carry **logic** inside them, they are only _Data Transfer Objects_, to associate some logic
+Now that we have created the commands, we might notice that they are simple DTO's, they don't
+carry any **logic** inside them, they are only _Data Transfer Objects_, to associate some logic
 we need what is called a handler, a handler's purpose is to process the given command and 
 return a response, so the handlers will contain the necessary logic to perform the necessary 
 operation.
@@ -109,7 +118,7 @@ The first handler's job will be performing the sum of two numbers:
     /**
      * A handler that performs the correspondent action for {@link SumCommand}.
      */
-    @CommandMapping(SumCommand.class)
+    @CommandMapping(SumCommand.class) // Associating the handler to the correspondent command (with the mapping)
     public class SumCommandHandler implements CommandHandler<SumCommand, Integer> {
 
         public Integer handle(SumCommand command) {
@@ -125,7 +134,7 @@ The second handler's job will be printing the provided message:
     /**
      * A handler that performs the correspondent action for {@link PrintLineCommand}.
      */
-    @CommandMapping(PrintLineCommand.class)
+    @CommandMapping(PrintLineCommand.class) // Associating the handler to the correspondent command (with the mapping)
     public class PrintLineCommandHandler implements CommandHandler<PrintLineCommand, Boolean> {
 
         public Boolean handle(PrintLineCommand command) {
