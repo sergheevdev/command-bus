@@ -16,13 +16,13 @@ public interface Container {
     /**
      * Associates the specified value with the type in this container.
      * If the key already had an associated value, the old value is
-     * replaced by the specified value.
+     * replaced by the newly specified value.
      *
      * @param key key with which the specified value is to be associated
      * @param value instance to be associated with the specified key
      * @param <T> the type of the value
      *
-     * @return the given value associated with {@code key}
+     * @return the new value associated with {@code key}
      */
     <T> T put(Class<T> key, Object value);
 
@@ -57,19 +57,23 @@ public interface Container {
      * @param key key whose presence in this container is to be tested
      *
      * @return {@code true} if this container has an association to an
-     * instance for the specified key.
+     *                      instance for the specified key, {@code false}
+     *                      otherwise
      */
     boolean contains(Class<?> key);
 
     /**
-     * Removes all the associations and stored instances from the container.
+     * Removes all the associations and stored instances from this
+     * container.
      */
     void clear();
 
     /**
-     * Returns {@code true} if this container has no stored instances.
+     * Returns {@code true} if this container has no key-value stored
+     * associations.
      *
-     * @return {@code true} if this container has no stored instances
+     * @return {@code true} if this container has no key-value stored
+     *         associations, {@code false} otherwise
      */
     boolean isEmpty();
 

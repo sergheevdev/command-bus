@@ -3,8 +3,9 @@ package dev.sergheev.commandbus;
 import dev.sergheev.commandbus.registry.CommandHandlerRegistry;
 
 /**
- * A factory responsible of returning different {@link CommandHandler}
- * implementations, each one depending on the given command name.
+ * An object responsible of returning different {@link CommandHandler}
+ * implementations, the returned implementation will be the one that
+ * is able to handle the provided command name.
  */
 public class SimpleCommandHandlerFinder implements CommandHandlerFinder {
 
@@ -15,11 +16,13 @@ public class SimpleCommandHandlerFinder implements CommandHandlerFinder {
     }
 
     /**
-     * Finds the {@link CommandHandler} implementation associated to the command name.
+     * Finds the {@link CommandHandler} implementation that is able to handle
+     * the given command name.
      *
-     * @param commandName the name of the command
+     * @param commandName the name of the command whose handler is to be found
      *
-     * @return a {@link CommandHandler} implementation associated to the given command name
+     * @return a {@link CommandHandler} implementation that is able to handle
+     *         the given command name
      */
     public <C extends Command, R> CommandHandler<C, R> findHandlerFor(String commandName) {
         return commandHandlerRegistry.getHandlerFor(commandName);

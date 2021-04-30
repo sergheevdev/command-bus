@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * A simple API for the construction of {@link SimpleCommandBus}.
+ * A simple fluent API for the construction of {@link SimpleCommandBus}.
  *
  * <p>The class is responsible for the instantiation of {@link SimpleCommandBus}
  * upon given preferences like {@link CommandHandler} pre-registration in the
@@ -52,20 +52,16 @@ public class SimpleCommandBusBuilder {
     }
 
     public SimpleCommandBus build() {
-        CommandHandlerRegistry commandHandlerRegistry;
-
-        if(Objects.isNull(customRegistry)) {
-            if(isConcurrent) {
-                commandHandlerRegistry = CommandHandlerRegistryFactory.newConcurrentRegistry();
-            } else {
-                commandHandlerRegistry = CommandHandlerRegistryFactory.newRegistry();
-            }
+        CommandHandlerRegistry handlerRegistry;
+        boolean hasNotCustomRegistry = Objects.isNull(customRegistry);
+        if(hasNotCustomRegistry) {
+            if(isConcurrent) handlerRegistry = CommandHandlerRegistryFactory.newConcurrentRegistry();
+            else handlerRegistry = CommandHandlerRegistryFactory.newRegistry();
         } else {
-            commandHandlerRegistry = customRegistry;
+            handlerRegistry = customRegistry;
         }
-
-        classToInstance.forEach(commandHandlerRegistry::registerHandler);
-        CommandHandlerFinder commandHandlerFinder = new SimpleCommandHandlerFinder(commandHandlerRegistry);
+        classToInstance.forEach(handlerRegistry::registerHandler);
+        CommandHandlerFinder commandHandlerFinder = new SimpleCommandHandlerFinder(handlerRegistry);
 
         return new SimpleCommandBus(commandHandlerFinder);
     }

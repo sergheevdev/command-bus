@@ -5,6 +5,7 @@ import dev.sergheev.commandbus.CommandMappings;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
@@ -15,9 +16,9 @@ import static java.util.Objects.requireNonNull;
 public class CommandMappingExtractor {
 
     /**
-     * Extracts all the {@link CommandMapping} present in the given class.
+     * Extracts all the {@link CommandMapping} present in a given class.
      *
-     * @param givenClass the class from which mappings will be extracted
+     * @param givenClass the class from which all {@link CommandMapping} will be extracted
      *
      * @throws NullPointerException if {@code givenClass} is {@code null}
      *
@@ -25,7 +26,7 @@ public class CommandMappingExtractor {
      */
     public List<CommandMapping> extractMappingsFrom(Class<?> givenClass) {
         requireNonNull(givenClass, "givenClass");
-        List<CommandMapping> foundMappings = new ArrayList<>();
+        List<CommandMapping> foundMappings = new LinkedList<>();
         if(givenClass.isAnnotationPresent(CommandMapping.class)) {
             CommandMapping mapping = givenClass.getAnnotation(CommandMapping.class);
             foundMappings.add(mapping);

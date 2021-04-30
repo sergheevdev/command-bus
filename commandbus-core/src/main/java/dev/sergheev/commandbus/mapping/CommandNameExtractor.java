@@ -3,6 +3,7 @@ package dev.sergheev.commandbus.mapping;
 import dev.sergheev.commandbus.CommandMapping;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
@@ -26,9 +27,9 @@ public class CommandNameExtractor {
     }
 
     /**
-     * Extracts a list of command names present in the mappings of the given class.
+     * Extracts a list of command names present in the mappings of a given class.
      *
-     * @param givenClass the given class in which command names searched
+     * @param givenClass the given class in which command names are to be searched
      *
      * @throws NullPointerException if {@code givenClass} is {@code null}
      *
@@ -36,7 +37,7 @@ public class CommandNameExtractor {
      */
     public List<String> extractCommandNamesFor(Class<?> givenClass) {
         requireNonNull(givenClass, "givenClass");
-        List<String> commandNames = new ArrayList<>();
+        List<String> commandNames = new LinkedList<>();
         List<CommandMapping> mappings = mappingExtractor.extractMappingsFrom(givenClass);
         mappings.forEach(mapping -> commandNames.add(mapping.value().getName()));
         return commandNames;

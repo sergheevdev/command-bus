@@ -12,7 +12,7 @@ import java.util.Map;
 import static java.util.Objects.requireNonNull;
 
 /**
- * Non thread-safe {@link CommandHandlerRegistry} implementation.
+ * A non thread-safe {@link CommandHandlerRegistry} implementation.
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class SimpleCommandHandlerRegistry implements CommandHandlerRegistry {

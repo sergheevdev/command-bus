@@ -10,75 +10,80 @@ import dev.sergheev.commandbus.CommandHandler;
 public interface CommandHandlerRegistry {
 
     /**
-     * Stores the specified instance with the type in the registry.
+     * Stores the specified type-instance relationship in this registry.
      *
-     * @param type type with which the instance is to be registered
-     * @param instance instance to be registered with the specified key
-     * @param <T> the type of the value
+     * @param type type with which the instance is to be associated
+     * @param instance instance to be associated with the specified type
+     * @param <T> the type of the instance
      *
-     * @return the current instance registered with {@code type}
+     * @return the newly registered instance associated to {@code type}
      */
     <T extends CommandHandler> T registerHandler(Class<T> type, Object instance);
 
     /**
-     * Removes the instance associated with the given {@code type}.
+     * Removes the instance to which the type is associated from this
+     * registry.
      *
-     * @param type type whose instance of to be removed from the registry
+     * @param type type whose instance of to be removed from this registry
      * @param <T> the type of the value
      *
-     * @return the previous value associated with {@code type}, or
-     *         {@code null} if there was no instance registered for
+     * @return the previous instance associated with {@code type}, or
+     *         {@code null} if there was no instance associated to
      *         {@code key}.
      */
     <T extends CommandHandler> T unregisterHandler(Class<T> type);
 
     /**
-     * Returns the instance to which the specified key is registered.
+     * Returns the instance to which the specified key is associated.
      *
-     * @param type type whose registered instance is to be returned
+     * @param type type whose associated instance is to be returned
      * @param <T> the type of the value
      *
-     * @return the current value registered with {@code type}, or
-     *         {@code null} if there was no registered for {@code type}
+     * @return the current instance associated to {@code type}, or
+     *         {@code null} if there was no association for {@code type}
      */
     <T extends CommandHandler> T getHandler(Class<T> type);
 
     /**
-     * Returns the instance which is able to handle the given command name.
+     * Returns the instance which is able to handle a given command name.
      *
      * @param commandName command class name
      * @param <C> type of the command
-     * @param <R> type of the handler's response to that given command execution
+     * @param <R> type of the handler's response
      *
      * @return the instance which is able to handle the given command name
      */
     <C extends Command, R> CommandHandler<C, R> getHandlerFor(String commandName);
 
     /**
-     * Returns {@code true} if this registry has any registration with the specified type.
+     * Returns {@code true} if the type is associated to an instance in
+     * this container, false otherwise.
      *
      * @param type type whose presence in this registry is to be tested
      *
-     * @return {@code true} if this registry has any registration with the specified type
+     * @return {@code true} if the type is associated to an instance in
+     *         this container, false otherwise.
      */
     boolean containsHandler(Class<? extends CommandHandler> type);
 
     /**
-     * Removes all the registered handlers from the registry.
+     * Removes all the registered associations from the registry.
      */
     void clearRegistry();
 
     /**
-     * Returns {@code true} if this registry has no stored instances.
+     * Returns {@code true} if this registry has no stored associations.
      *
-     * @return {@code true} if this registry has no stored instances.
+     * @return {@code true} if this registry has no stored associations.
      */
     boolean isRegistryEmpty();
 
     /**
-     * Returns the amount of type-instance currently registered.
+     * Returns the amount of type-instance associations currently in
+     * this registry.
      *
-     * @return the amount of type-instance currently registered.
+     * @return the amount of type-instance associations currently in
+     *         this registry.
      */
     int registrySize();
 
