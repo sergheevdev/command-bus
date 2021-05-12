@@ -47,4 +47,4 @@ at the [wiki page of this repository](https://github.com/sergheevdev/command-bus
 
 ## License
 
-[MIT](LICENSE) &copy; Serghei Sergheev
+[Apache 2.0](LICENSE) &copy; Serghei Sergheev
