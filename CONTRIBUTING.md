@@ -47,7 +47,9 @@ We use GitHub issues to track public bugs. Report a bug by [opening a new issue]
 
 ## Use a Consistent Coding Style
 
-I'm borrowing the coding style guide from [Google's Java Style Guide](https://google.github.io/styleguide/javaguide.html).
+I'm borrowing the coding style guide from [Google's Java Style Guide](https://google.github.io/styleguide/javaguide.html) (but using tabs instead of spaces).
+
+Remember that the coding style is just a reference and there is no need to strictly follow it, as long as the coding style is consistent with the current one.
 
 ## License
 
