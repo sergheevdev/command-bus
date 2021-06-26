@@ -1,6 +1,6 @@
 # :bus: CommandBus
 
-[![MIT License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/sergheevdev/command-bus/blob/main/LICENSE)
+[![Apache 2.0 License](https://img.shields.io/badge/License-Apache%202.0-brightgreen.svg)](https://github.com/sergheevdev/command-bus/blob/main/LICENSE)
 
 ## Introduction
 
