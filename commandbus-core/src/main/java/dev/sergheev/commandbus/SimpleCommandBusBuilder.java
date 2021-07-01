@@ -10,11 +10,11 @@ import java.util.Objects;
 import static java.util.Objects.requireNonNull;
 
 /**
- * A simple fluent API for the construction of a {@link SimpleCommandBus}.
+ * A simple fluent API builder for the construction of a {@link SimpleCommandBus}.
  *
- * <p>This object is responsible for the instantiation of a {@link SimpleCommandBus},
- * it allows to easily construct the bus and specify custom properties that will
- * define the bus behavior at runtime (i.e. thread-safety).
+ * <p>This object is responsible to provide the clients a simple API for the construction
+ * of a {@link SimpleCommandBus}. It allows to easily construct the bus and specify custom
+ * properties that will define the bus behavior at runtime (i.e. thread-safety).
  */
 @SuppressWarnings({ "rawtypes" })
 public class SimpleCommandBusBuilder {
@@ -34,7 +34,7 @@ public class SimpleCommandBusBuilder {
     }
 
     /**
-     * Ensures the thread-safety of the constructed bus and its functioning in multithreaded environments.
+     * Ensures the thread-safety of the bus and its functioning in multithreaded environments.
      * @return the current builder
      */
     public SimpleCommandBusBuilder concurrent() {
@@ -43,22 +43,10 @@ public class SimpleCommandBusBuilder {
     }
 
     /**
-     * Registers a new handler that will contain behavior that is to be associated with a command.
-     * @param type the type of the command handler object that is to be registered
-     * @param instance the instance that matches the previously specified type
-     * @throws IllegalArgumentException if the instance does not match the given type
-     * @return the current builder
-     */
-    public SimpleCommandBusBuilder registerHandler(Class<? extends CommandHandler> type, Object instance) {
-        if(!type.isInstance(instance)) throw new IllegalArgumentException("The given instance must match the type");
-        classToInstance.put(type, instance);
-        return this;
-    }
-
-    /**
-     * Registers multiple new handlers that will contain behavior that is to be associated with their commands.
-     * @param handlers a map containing the type-instance handler associations
-     * @throws IllegalArgumentException if any instance in the given map does not match its type
+     * Associates all the map entries types with the concrete instances for the bus being built.
+     * @param handlers the map containing all the type-instance handler associations
+     * @throws NullPointerException if any {@code type} or {@code instance} is null at some entry
+     * @throws IllegalArgumentException if any {@code instance} at some entry is not of the specified {@code type}
      * @return the current builder
      */
     public SimpleCommandBusBuilder registerHandlers(Map<Class<? extends CommandHandler>, Object> handlers) {
@@ -67,8 +55,24 @@ public class SimpleCommandBusBuilder {
     }
 
     /**
-     * Sets a manually managed or custom handler registry instance that is to be used in this bus.
-     * @param customRegistry the custom command handler registry instance
+     * Associates the specified type with the concrete instance for the bus being built.
+     * @param type the type that represents the handler class
+     * @param instance the instance that represents the concrete instance
+     * @throws NullPointerException if the {@code type} or the {@code instance} are null
+     * @throws IllegalArgumentException if the {@code instance} is not of the specified {@code type}
+     * @return the current builder
+     */
+    public SimpleCommandBusBuilder registerHandler(Class<? extends CommandHandler> type, Object instance) {
+        requireNonNull(type, "type");
+        requireNonNull(instance, "instance");
+        if(!type.isInstance(instance)) throw new IllegalArgumentException("The given instance must match the type");
+        classToInstance.put(type, instance);
+        return this;
+    }
+
+    /**
+     * Establishes the usage of a manually managed or custom registry instance for the bus being built.
+     * @param customRegistry the custom registry that is to be used
      * @return the current builder
      */
     public SimpleCommandBusBuilder withRegistry(CommandHandlerRegistry customRegistry) {
@@ -76,6 +80,10 @@ public class SimpleCommandBusBuilder {
         return this;
     }
 
+    /**
+     * Returns a new {@link SimpleCommandBus} configured accordingly to this builder's set properties.
+     * @return a new {@link SimpleCommandBus} instance
+     */
     public SimpleCommandBus build() {
         CommandHandlerRegistry handlerRegistry;
         boolean hasCustomRegistry = !Objects.isNull(customRegistry);
