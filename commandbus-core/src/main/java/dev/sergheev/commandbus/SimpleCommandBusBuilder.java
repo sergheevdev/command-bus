@@ -73,6 +73,7 @@ public class SimpleCommandBusBuilder {
     /**
      * Establishes the usage of a manually managed or custom registry instance for the bus being built.
      * @param customRegistry the custom registry that is to be used
+     * @throws NullPointerException if the given {@code customRegistry} is null
      * @return the current builder
      */
     public SimpleCommandBusBuilder withRegistry(CommandHandlerRegistry customRegistry) {
