@@ -17,11 +17,8 @@ public class CommandMappingExtractor {
 
     /**
      * Extracts all the {@link CommandMapping} present in a given class.
-     *
      * @param givenClass the class from which all {@link CommandMapping} will be extracted
-     *
      * @throws NullPointerException if {@code givenClass} is {@code null}
-     *
      * @return a list of {@link CommandMapping}
      */
     public List<CommandMapping> extractMappingsFrom(Class<?> givenClass) {

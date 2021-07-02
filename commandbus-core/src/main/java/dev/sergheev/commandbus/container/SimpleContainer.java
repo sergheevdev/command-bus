@@ -10,16 +10,14 @@ import static java.util.Objects.requireNonNull;
 /**
  * A simple {@link Container} implementation.
  *
- * This implementation contains two creation methods, that provide
+ * <p>This implementation contains two creation methods, that provide
  * a way of choosing if we want a thread-safe or a non thread-safe
  * instance of the container.
  */
 public class SimpleContainer implements Container {
 
     /**
-     * Creates a thread-safe {@link SimpleContainer} based on a
-     * {@link HashMap}.
-     *
+     * Creates a thread-safe {@link SimpleContainer} based on a {@link HashMap}.
      * @return a thread-safe {@link SimpleContainer}
      */
     public static SimpleContainer newInstance() {
@@ -27,9 +25,7 @@ public class SimpleContainer implements Container {
     }
 
     /**
-     * Creates a non thread-safe {@link SimpleContainer} based on
-     * a {@link ConcurrentHashMap}.
-     *
+     * Creates a non thread-safe {@link SimpleContainer} based on a {@link ConcurrentHashMap}.
      * @return a non thread-safe {@link SimpleContainer}
      */
     public static SimpleContainer newConcurrentInstance() {
@@ -43,10 +39,11 @@ public class SimpleContainer implements Container {
     }
 
     private SimpleContainer(Supplier<Map<Class<?>, Object>> mapSupplier) {
+        requireNonNull(mapSupplier, "mapSupplier");
         this.typeToInstance = asEmptyMap(mapSupplier);
     }
 
-    /*
+    /**
      * Ensuring type-safety (by checking that the map has not been
      * modified externally) because Java is not capable of expressing
      * this key-value relationship.

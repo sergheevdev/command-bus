@@ -45,7 +45,7 @@ public class SimpleCommandBusBuilder {
     /**
      * Associates all the map entries types with the concrete instances for the bus being built.
      * @param handlers the map containing all the type-instance handler associations
-     * @throws NullPointerException if any {@code type} or {@code instance} is null at some entry
+     * @throws NullPointerException if any {@code type} or {@code instance} is {@code null} at some entry
      * @throws IllegalArgumentException if any {@code instance} at some entry is not of the specified {@code type}
      * @return the current builder
      */
@@ -58,7 +58,7 @@ public class SimpleCommandBusBuilder {
      * Associates the specified type with the concrete instance for the bus being built.
      * @param type the type that represents the handler class
      * @param instance the instance that represents the concrete instance
-     * @throws NullPointerException if the {@code type} or the {@code instance} are null
+     * @throws NullPointerException if the {@code type} or the {@code instance} are {@code null}
      * @throws IllegalArgumentException if the {@code instance} is not of the specified {@code type}
      * @return the current builder
      */
@@ -73,7 +73,7 @@ public class SimpleCommandBusBuilder {
     /**
      * Establishes the usage of a manually managed or custom registry instance for the bus being built.
      * @param customRegistry the custom registry that is to be used
-     * @throws NullPointerException if the given {@code customRegistry} is null
+     * @throws NullPointerException if the given {@code customRegistry} is {@code null}
      * @return the current builder
      */
     public SimpleCommandBusBuilder withRegistry(CommandHandlerRegistry customRegistry) {

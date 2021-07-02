@@ -18,9 +18,7 @@ import static java.util.Objects.requireNonNull;
 public class SimpleCommandHandlerRegistry implements CommandHandlerRegistry {
 
     private final Container handlerContainer;
-
     private final Map<String, Class<? extends CommandHandler>> commandNameToType;
-
     private final CommandNameExtractor commandNameExtractor;
 
     private SimpleCommandHandlerRegistry() {
@@ -28,7 +26,7 @@ public class SimpleCommandHandlerRegistry implements CommandHandlerRegistry {
     }
 
     SimpleCommandHandlerRegistry(Container handlerContainer) {
-        this.handlerContainer = requireNonNull(handlerContainer);
+        this.handlerContainer = requireNonNull(handlerContainer, "handlerContainer");
         this.commandNameToType = new HashMap<>();
         this.commandNameExtractor = new CommandNameExtractor();
     }
@@ -36,6 +34,7 @@ public class SimpleCommandHandlerRegistry implements CommandHandlerRegistry {
     @Override
     public <T extends CommandHandler> T registerHandler(Class<T> type, Object instance) {
         requireNonNull(type, "type");
+        requireNonNull(instance, "instance");
         List<String> commandNames = commandNameExtractor.extractCommandNamesFor(type);
         commandNames.forEach(name -> commandNameToType.put(name, type));
         return handlerContainer.put(type, instance);

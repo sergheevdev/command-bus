@@ -20,11 +20,8 @@ import static java.util.Objects.requireNonNull;
 public class ConcurrentCommandHandlerRegistry implements CommandHandlerRegistry {
 
     private final Container handlerContainer;
-
     private final Map<String, Class<? extends CommandHandler>> commandNameToType;
-
     private final CommandNameExtractor commandNameExtractor;
-
     private final Lock registryLock;
 
     private ConcurrentCommandHandlerRegistry() {
@@ -32,7 +29,7 @@ public class ConcurrentCommandHandlerRegistry implements CommandHandlerRegistry 
     }
 
     ConcurrentCommandHandlerRegistry(Container handlerContainer) {
-        this.handlerContainer = requireNonNull(handlerContainer);
+        this.handlerContainer = requireNonNull(handlerContainer, "handlerContainer");
         this.commandNameToType = new HashMap<>();
         this.commandNameExtractor = new CommandNameExtractor();
         this.registryLock = new ReentrantLock();
@@ -41,6 +38,7 @@ public class ConcurrentCommandHandlerRegistry implements CommandHandlerRegistry 
     @Override
     public <T extends CommandHandler> T registerHandler(Class<T> type, Object instance) {
         requireNonNull(type, "type");
+        requireNonNull(instance, "instance");
         List<String> commandNames = commandNameExtractor.extractCommandNamesFor(type);
         registryLock.lock();
         try {
