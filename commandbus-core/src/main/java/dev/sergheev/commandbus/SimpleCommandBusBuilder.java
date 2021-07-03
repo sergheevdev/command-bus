@@ -15,16 +15,35 @@ import static java.util.Objects.requireNonNull;
  * <p>This object is responsible to provide the clients a simple API for the construction
  * of a {@link SimpleCommandBus}. It allows to easily construct the bus and specify custom
  * properties that will define the bus behavior at runtime (i.e. thread-safety).
+ *
+ * <p>Some of the reasons for using this fluent API builder are:
+ * <li>Prevent assembling confusion (we provide a simple way for constructing a complex object).
+ * <li>Separation of the bus structure from its implementation (can easily vary internals without affecting the client).
  */
 @SuppressWarnings({ "rawtypes" })
 public class SimpleCommandBusBuilder {
 
+    /**
+     * A static factory method for the creation of a new {@code SimpleCommandBusBuilder} instance.
+     * @return a new {@link SimpleCommandBusBuilder} instance.
+     */
     public static SimpleCommandBusBuilder create() {
         return new SimpleCommandBusBuilder();
     }
 
+    /**
+     * Indicates if the bus being built must be thread-safe (concurrent) or not.
+     */
     private boolean isConcurrent;
+
+    /**
+     * Stores a custom or client-managed registry that is to be provided by the client.
+     */
     private CommandHandlerRegistry customRegistry;
+
+    /**
+     * Contains all the handler class to handler instance associations that are to be stored in the registry.
+     */
     private final Map<Class<? extends CommandHandler>, Object> classToInstance;
 
     public SimpleCommandBusBuilder() {
@@ -34,8 +53,8 @@ public class SimpleCommandBusBuilder {
     }
 
     /**
-     * Ensures the thread-safety of the bus and its functioning in multithreaded environments.
-     * @return the current builder
+     * Ensures the thread-safety of the bus being built and its functioning in multithreaded environments.
+     * @return the current {@code SimpleCommandBusBuilder} instance
      */
     public SimpleCommandBusBuilder concurrent() {
         isConcurrent = true;
@@ -43,11 +62,11 @@ public class SimpleCommandBusBuilder {
     }
 
     /**
-     * Associates all the map entries types with the concrete instances for the bus being built.
+     * Registers all the type-instance handler associations for the bus being built.
      * @param handlers the map containing all the type-instance handler associations
-     * @throws NullPointerException if any {@code type} or {@code instance} is {@code null} at some entry
-     * @throws IllegalArgumentException if any {@code instance} at some entry is not of the specified {@code type}
-     * @return the current builder
+     * @throws NullPointerException if any {@code type} or {@code instance} mapping is {@code null}
+     * @throws IllegalArgumentException if any {@code instance} is not of the specified {@code type}
+     * @return the current {@code SimpleCommandBusBuilder} instance
      */
     public SimpleCommandBusBuilder registerHandlers(Map<Class<? extends CommandHandler>, Object> handlers) {
         handlers.forEach(this::registerHandler);
@@ -55,12 +74,12 @@ public class SimpleCommandBusBuilder {
     }
 
     /**
-     * Associates the specified type with the concrete instance for the bus being built.
-     * @param type the type that represents the handler class
-     * @param instance the instance that represents the concrete instance
+     * Registers a type-instance handler association for the bus being built.
+     * @param type the type of the handler class
+     * @param instance the instance of the previously mentioned type
      * @throws NullPointerException if the {@code type} or the {@code instance} are {@code null}
      * @throws IllegalArgumentException if the {@code instance} is not of the specified {@code type}
-     * @return the current builder
+     * @return the current {@code SimpleCommandBusBuilder} instance
      */
     public SimpleCommandBusBuilder registerHandler(Class<? extends CommandHandler> type, Object instance) {
         requireNonNull(type, "type");
@@ -71,10 +90,12 @@ public class SimpleCommandBusBuilder {
     }
 
     /**
-     * Establishes the usage of a manually managed or custom registry instance for the bus being built.
+     * Uses a manually managed or custom provided registry instance for the bus being built. It is
+     * useful to provide a self-managed registry when commands and handlers will be modified at
+     * runtime to prevent a {@link java.util.ConcurrentModificationException}.
      * @param customRegistry the custom registry that is to be used
      * @throws NullPointerException if the given {@code customRegistry} is {@code null}
-     * @return the current builder
+     * @return the current {@code SimpleCommandBusBuilder} instance
      */
     public SimpleCommandBusBuilder withRegistry(CommandHandlerRegistry customRegistry) {
         this.customRegistry = requireNonNull(customRegistry, "customRegistry");
@@ -82,8 +103,10 @@ public class SimpleCommandBusBuilder {
     }
 
     /**
-     * Returns a new {@link SimpleCommandBus} configured accordingly to this builder's set properties.
-     * @return a new {@link SimpleCommandBus} instance
+     * Constructs a new {@link SimpleCommandBus} instance configured accordingly. If a custom or
+     * manually-managed {@link CommandHandlerRegistry} is not specified a default non-thread
+     * safe implementation of the registry will be used.
+     * @return a new {@link SimpleCommandBus} instance configured accordingly.
      */
     public SimpleCommandBus build() {
         CommandHandlerRegistry handlerRegistry;
