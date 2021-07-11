@@ -1,4 +1,4 @@
-package dev.sergheev.commandbus;
+package dev.sergheev.commandbus.mapping;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

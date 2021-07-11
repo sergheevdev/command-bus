@@ -1,23 +1,20 @@
 package dev.sergheev.commandbus.mapping;
 
-import dev.sergheev.commandbus.CommandMapping;
-
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
 /**
- * A simple decorator for {@link CommandMappingExtractor} that extracts command names
- * from {@link CommandMapping} present in a class.
- *
- * <p>The purpose of this decorator is to add another layer of abstraction to extract
- * command names from mappings, but first we need to obtain those mappings, which is
- * done by the decorated {@link CommandMappingExtractor} class.
+ * A simple decorator for {@link CommandMappingExtractor} that extracts all the
+ * command names (fully qualified commands class names) from {@link CommandMapping}
+ * annotations present in that class.
  */
 public class CommandNameExtractor {
 
+    /**
+     * Extracts command mappings from a given class.
+     */
     private final CommandMappingExtractor mappingExtractor;
 
     public CommandNameExtractor() {
@@ -31,7 +28,7 @@ public class CommandNameExtractor {
      * @return a list of command names associated to {@code givenClass}
      */
     public List<String> extractCommandNamesFor(Class<?> givenClass) {
-        requireNonNull(givenClass, "givenClass");
+        requireNonNull(givenClass, "givenClass must not be null");
         List<String> commandNames = new LinkedList<>();
         List<CommandMapping> mappings = mappingExtractor.extractMappingsFrom(givenClass);
         mappings.forEach(mapping -> commandNames.add(mapping.value().getName()));

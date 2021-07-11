@@ -11,22 +11,31 @@ import static java.util.Objects.requireNonNull;
  */
 public class SimpleCommandBus implements CommandBus {
 
-    private final CommandHandlerFinder handlerFinder;
+    /**
+     * Stores all the command-handler associations.
+     */
+    private final CommandHandlerFinder commandHandlerFinder;
 
+    /**
+     * Constructs a new {@link SimpleCommandBus} instance.
+     * @throws NullPointerException if the {@code commandHandlerFinder} is {@code null}
+     */
     public SimpleCommandBus(CommandHandlerFinder commandHandlerFinder) {
-        this.handlerFinder = requireNonNull(commandHandlerFinder, "commandHandlerFinder");
+        requireNonNull(commandHandlerFinder, "commandHandlerFinder must not be null");
+        this.commandHandlerFinder = commandHandlerFinder;
     }
 
     /**
-     * Returns the result from processing the given command.
+     * Returns the resulting object from processing the given command.
      * @param command the command that is to be processed
      * @param <R> the type of the returned result
-     * @return the result from processing the given command
+     * @throws NullPointerException if the given {@code command} is {@code null}
+     * @return the resulting object from processing the given command
      */
     @Override
     public <R> R execute(Command command) {
-        requireNonNull(command, "command");
-        CommandHandler<Command, R> handler = handlerFinder.findHandlerFor(command.getClass().getName());
+        requireNonNull(command, "command must not be null");
+        CommandHandler<Command, R> handler = commandHandlerFinder.findHandlerFor(command.getClass().getName());
         return handler.handle(command);
     }
 

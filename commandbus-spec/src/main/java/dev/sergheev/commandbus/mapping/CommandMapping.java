@@ -1,4 +1,6 @@
-package dev.sergheev.commandbus;
+package dev.sergheev.commandbus.mapping;
+
+import dev.sergheev.commandbus.Command;
 
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;

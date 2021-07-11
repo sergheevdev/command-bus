@@ -65,13 +65,15 @@ public class SimpleCommandBusBuilder {
 
     /**
      * Registers all the type-instance handler associations for the bus being built.
-     * @param handlers the map containing all the type-instance handler associations
+     * @param classToHandler the map containing all the type-instance handler associations
      * @throws NullPointerException if any {@code type} or {@code instance} mapping is {@code null}
+     * @throws IllegalArgumentException if the {@code handlers} map is {@code null}
      * @throws IllegalArgumentException if any {@code instance} is not of the specified {@code type}
      * @return the current {@link SimpleCommandBusBuilder} instance
      */
-    public SimpleCommandBusBuilder registerHandlers(Map<Class<? extends CommandHandler>, Object> handlers) {
-        handlers.forEach(this::registerHandler);
+    public SimpleCommandBusBuilder registerHandlers(Map<Class<? extends CommandHandler>, Object> classToHandler) {
+        requireNonNull(classToHandler, "classToHandler must not be null");
+        classToHandler.forEach(this::registerHandler);
         return this;
     }
 
@@ -84,8 +86,8 @@ public class SimpleCommandBusBuilder {
      * @return the current {@link SimpleCommandBusBuilder} instance
      */
     public SimpleCommandBusBuilder registerHandler(Class<? extends CommandHandler> type, Object instance) {
-        requireNonNull(type, "type");
-        requireNonNull(instance, "instance");
+        requireNonNull(type, "type must not be null");
+        requireNonNull(instance, "instance must not be null");
         if(!type.isInstance(instance)) throw new IllegalArgumentException("The given instance must match the type");
         classToInstance.put(type, instance);
         return this;
@@ -100,7 +102,8 @@ public class SimpleCommandBusBuilder {
      * @return the current {@link SimpleCommandBusBuilder} instance
      */
     public SimpleCommandBusBuilder withRegistry(CommandHandlerRegistry customRegistry) {
-        this.customRegistry = requireNonNull(customRegistry, "customRegistry");
+        requireNonNull(customRegistry, "customRegistry must not be null");
+        this.customRegistry = customRegistry;
         return this;
     }
 

@@ -1,5 +1,7 @@
 package dev.sergheev.commandbus;
 
+import dev.sergheev.commandbus.mapping.CommandMapping;
+
 /**
  * A handler that performs the correspondent action for {@link PrintLineCommand}.
  */
