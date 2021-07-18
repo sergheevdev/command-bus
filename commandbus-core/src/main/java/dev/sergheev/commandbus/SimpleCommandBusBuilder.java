@@ -7,6 +7,7 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,7 +28,7 @@ public class SimpleCommandBusBuilder {
 
     /**
      * A static factory method for the creation of a new {@code SimpleCommandBusBuilder} instance.
-     * @return a new {@link SimpleCommandBusBuilder} instance.
+     * @return a new {@link SimpleCommandBusBuilder} instance
      */
     public static SimpleCommandBusBuilder create() {
         return new SimpleCommandBusBuilder();
@@ -51,11 +52,11 @@ public class SimpleCommandBusBuilder {
     public SimpleCommandBusBuilder() {
         this.isConcurrent = false;
         this.customRegistry = null;
-        this.classToInstance = new HashMap<>();
+        this.classToInstance = new ConcurrentHashMap<>();
     }
 
     /**
-     * Ensures the thread-safety of the bus being built and its functioning in multithreaded environments.
+     * Ensures the thread-safety of the bus being built and its functioning in multi-threaded environments.
      * @return the current {@link SimpleCommandBusBuilder} instance
      */
     public SimpleCommandBusBuilder concurrent() {
@@ -71,7 +72,7 @@ public class SimpleCommandBusBuilder {
      * @throws IllegalArgumentException if any {@code instance} is not of the specified {@code type}
      * @return the current {@link SimpleCommandBusBuilder} instance
      */
-    public SimpleCommandBusBuilder registerHandlers(Map<Class<? extends CommandHandler>, Object> classToHandler) {
+    public SimpleCommandBusBuilder registerHandlers(Map<Class<? extends CommandHandler>, Object> classToHandler) throws NullPointerException, IllegalArgumentException {
         requireNonNull(classToHandler, "classToHandler must not be null");
         classToHandler.forEach(this::registerHandler);
         return this;
@@ -85,7 +86,7 @@ public class SimpleCommandBusBuilder {
      * @throws IllegalArgumentException if the {@code instance} is not of the specified {@code type}
      * @return the current {@link SimpleCommandBusBuilder} instance
      */
-    public SimpleCommandBusBuilder registerHandler(Class<? extends CommandHandler> type, Object instance) {
+    public SimpleCommandBusBuilder registerHandler(Class<? extends CommandHandler> type, Object instance) throws NullPointerException, IllegalArgumentException {
         requireNonNull(type, "type must not be null");
         requireNonNull(instance, "instance must not be null");
         if(!type.isInstance(instance)) throw new IllegalArgumentException("The given instance must match the type");
@@ -94,14 +95,14 @@ public class SimpleCommandBusBuilder {
     }
 
     /**
-     * Uses a client-managed or custom-provided registry instance for the bus being built.
+     * Use a client-managed or custom-provided registry instance for the bus being built.
      * It is useful to provide a client self-managed registry when commands and handlers
      * will be modified at runtime, to prevent a {@link ConcurrentModificationException}.
      * @param customRegistry the custom registry that is to be used
      * @throws NullPointerException if the given {@code customRegistry} is {@code null}
      * @return the current {@link SimpleCommandBusBuilder} instance
      */
-    public SimpleCommandBusBuilder withRegistry(CommandHandlerRegistry customRegistry) {
+    public SimpleCommandBusBuilder withRegistry(CommandHandlerRegistry customRegistry) throws NullPointerException {
         requireNonNull(customRegistry, "customRegistry must not be null");
         this.customRegistry = customRegistry;
         return this;

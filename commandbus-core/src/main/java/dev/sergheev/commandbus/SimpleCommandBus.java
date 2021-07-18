@@ -5,8 +5,8 @@ import static java.util.Objects.requireNonNull;
 /**
  * A simple implementation for a {@link CommandBus}.
  *
- * This object is responsible of taking in a {@link Command}, associating
- * it to its handler, and using that handler to perform the desired action
+ * <p>This object is responsible for taking in a {@link Command}, associating
+ * it to its handler, and using that handler to perform the desired action,
  * finally returning the command execution result.
  */
 public class SimpleCommandBus implements CommandBus {
@@ -20,7 +20,7 @@ public class SimpleCommandBus implements CommandBus {
      * Constructs a new {@link SimpleCommandBus} instance.
      * @throws NullPointerException if the {@code commandHandlerFinder} is {@code null}
      */
-    public SimpleCommandBus(CommandHandlerFinder commandHandlerFinder) {
+    public SimpleCommandBus(CommandHandlerFinder commandHandlerFinder) throws NullPointerException {
         requireNonNull(commandHandlerFinder, "commandHandlerFinder must not be null");
         this.commandHandlerFinder = commandHandlerFinder;
     }
@@ -33,7 +33,7 @@ public class SimpleCommandBus implements CommandBus {
      * @return the resulting object from processing the given command
      */
     @Override
-    public <R> R execute(Command command) {
+    public <R> R execute(Command command) throws NullPointerException {
         requireNonNull(command, "command must not be null");
         CommandHandler<Command, R> handler = commandHandlerFinder.findHandlerFor(command.getClass().getName());
         return handler.handle(command);

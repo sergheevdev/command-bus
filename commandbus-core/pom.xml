@@ -8,9 +8,11 @@
         <version>0.0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
     <artifactId>commandbus-core</artifactId>
-
+    <properties>
+        <junit.version>4.13.2</junit.version>
+        <mockito.version>1.10.19</mockito.version>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>dev.sergheev</groupId>
@@ -18,22 +20,16 @@
             <version>0.0.1</version>
         </dependency>
         <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>0.9.12</version>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
-            <version>1.10.19</version>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
-
 </project>

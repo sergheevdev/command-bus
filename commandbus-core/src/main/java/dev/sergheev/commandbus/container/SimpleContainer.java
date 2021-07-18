@@ -1,7 +1,5 @@
 package dev.sergheev.commandbus.container;
 
-import dev.sergheev.commandbus.SimpleCommandBus;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,6 +44,9 @@ public class SimpleContainer implements Container {
      */
     private final Map<Class<?>, Object> typeToInstance;
 
+    /**
+     * @throws AssertionError if an attempt to instantiate {@code SimpleContainer} is made (ensures non-instantiability)
+     */
     private SimpleContainer() {
         throw new AssertionError();
     }
@@ -56,7 +57,7 @@ public class SimpleContainer implements Container {
      * @throws NullPointerException if the {@code mapSupplier} supplied map is {@code null}
      * @throws IllegalArgumentException if the {@code mapSupplier} supplied map is not empty
      */
-    private SimpleContainer(Supplier<Map<Class<?>, Object>> mapSupplier) {
+    private SimpleContainer(Supplier<Map<Class<?>, Object>> mapSupplier) throws NullPointerException, IllegalArgumentException {
         requireNonNull(mapSupplier, "mapSupplier must not be null");
         this.typeToInstance = asEmptyMap(mapSupplier);
     }
@@ -65,7 +66,7 @@ public class SimpleContainer implements Container {
      * Ensuring type-safety (by checking that the map has not been modified externally)
      * because Java is not capable of expressing this key-value relationship.
      */
-    private Map<Class<?>, Object> asEmptyMap(Supplier<Map<Class<?>, Object>> mapSupplier) {
+    private Map<Class<?>, Object> asEmptyMap(Supplier<Map<Class<?>, Object>> mapSupplier) throws NullPointerException, IllegalArgumentException {
         Map<Class<?>, Object> suppliedMap = mapSupplier.get();
         requireNonNull(suppliedMap, "suppliedMap must not be null");
         if(!suppliedMap.isEmpty()) throw new IllegalArgumentException("suppliedMap must be empty");
@@ -85,8 +86,8 @@ public class SimpleContainer implements Container {
      */
     @Override
     public <T> T put(Class<T> key, Object value) throws NullPointerException {
-        requireNonNull(key, "key");
-        requireNonNull(value, "value");
+        requireNonNull(key, "key must not be null");
+        requireNonNull(value, "value must not be null");
         return key.cast(typeToInstance.put(key, value));
     }
 
@@ -100,7 +101,7 @@ public class SimpleContainer implements Container {
      */
     @Override
     public <T> T remove(Class<T> key) throws NullPointerException {
-        requireNonNull(key, "key");
+        requireNonNull(key, "key must not be null");
         return key.cast(typeToInstance.remove(key));
     }
 
@@ -114,7 +115,7 @@ public class SimpleContainer implements Container {
      */
     @Override
     public <T> T get(Class<T> key) throws NullPointerException {
-        requireNonNull(key, "key");
+        requireNonNull(key, "key must not be null");
         return key.cast(typeToInstance.get(key));
     }
 
@@ -128,7 +129,7 @@ public class SimpleContainer implements Container {
      */
     @Override
     public boolean contains(Class<?> key) throws NullPointerException {
-        requireNonNull(key, "key");
+        requireNonNull(key, "key must not be null");
         return typeToInstance.containsKey(key);
     }
 
@@ -142,8 +143,7 @@ public class SimpleContainer implements Container {
 
     /**
      * Returns {@code true} if this container has no key-value stored associations.
-     * @return {@code true} if this container has no key-value stored associations,
-     *         {@code false} otherwise
+     * @return {@code true} if this container has no key-value stored associations, {@code false} otherwise
      */
     @Override
     public boolean isEmpty() {

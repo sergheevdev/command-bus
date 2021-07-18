@@ -17,45 +17,51 @@ public interface CommandHandlerRegistry {
      * @param type type with which the instance is to be associated
      * @param instance instance to be associated with the specified type
      * @param <T> the type of the instance
+     * @throws NullPointerException if {@code type} is {@code null}
+     * @throws NullPointerException if {@code instance} is {@code null}
      * @return the newly registered instance associated to {@code type}
      */
-    <T extends CommandHandler> T registerHandler(Class<T> type, Object instance);
+    <T extends CommandHandler> T registerHandler(Class<T> type, Object instance) throws NullPointerException;
 
     /**
      * Removes the instance to which the type is associated from this registry.
      * @param type type whose instance of to be removed from this registry
      * @param <T> the type of the value
+     * @throws NullPointerException if {@code type} is {@code null}
      * @return the previous instance associated with {@code type}, or {@code null}
      *         if there was no instance associated to {@code key}.
      */
-    <T extends CommandHandler> T unregisterHandler(Class<T> type);
+    <T extends CommandHandler> T unregisterHandler(Class<T> type) throws NullPointerException;
 
     /**
      * Returns the instance to which the specified key is associated.
      * @param type type whose associated instance is to be returned
      * @param <T> the type of the value
-     * @return the current instance associated to {@code type}, or {@code null}
-     *         if there was no association for {@code type}
+     * @throws NullPointerException if {@code type} is {@code null}
+     * @return the current instance associated to {@code type}, or
+     *         {@code null} if there was no association for {@code type}
      */
-    <T extends CommandHandler> T getHandler(Class<T> type);
+    <T extends CommandHandler> T getHandler(Class<T> type) throws NullPointerException;
 
     /**
      * Returns the instance which is able to handle a given command name.
      * @param commandName command class name
      * @param <C> type of the command
      * @param <R> type of the handler's response
+     * @throws NullPointerException if {@code commandName} is {@code null}
      * @return the instance which is able to handle the given command name
      */
-    <C extends Command, R> CommandHandler<C, R> getHandlerFor(String commandName);
+    <C extends Command, R> CommandHandler<C, R> getHandlerFor(String commandName) throws NullPointerException;
 
     /**
      * Returns {@code true} if the type is associated to an instance in this
      * container, false otherwise.
      * @param type type whose presence in this registry is to be tested
-     * @return {@code true} if the type is associated to an instance in
-     *         this container, false otherwise.
+     * @throws NullPointerException if {@code type} is {@code null}
+     * @return {@code true} if the type is associated to an instance in this
+     *         container, false otherwise.
      */
-    boolean containsHandler(Class<? extends CommandHandler> type);
+    boolean containsHandler(Class<? extends CommandHandler> type) throws NullPointerException;
 
     /**
      * Removes all the registered associations from the registry.

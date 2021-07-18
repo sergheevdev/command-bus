@@ -7,11 +7,9 @@ package dev.sergheev.commandbus;
 public interface CommandHandler<C extends Command, R> {
 
     /**
-     * Receives, digests and returns an answer about the given command execution.
-     *
-     * @param command the concrete command
-     *
-     * @return the execution result
+     * Receives, processes and returns the command execution result
+     * @param command the concrete command that is to be processed
+     * @return the command execution result
      */
     R handle(C command);
 

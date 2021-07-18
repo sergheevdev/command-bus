@@ -7,12 +7,12 @@ package dev.sergheev.commandbus;
 public interface CommandBus {
 
     /**
-     * Returns an answer based on the execution state of the command.
-     *
-     * @param command the concrete command
-     *
-     * @return the execution result
+     * Returns the resulting object from processing the given command.
+     * @param command the command that is to be processed
+     * @param <R> the type of the returned result
+     * @throws NullPointerException if the given {@code command} is {@code null}
+     * @return the resulting object from processing the given command
      */
-    <R> R execute(Command command);
+    <R> R execute(Command command) throws NullPointerException;
 
 }
