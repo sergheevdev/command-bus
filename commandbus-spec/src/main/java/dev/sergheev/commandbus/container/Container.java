@@ -20,9 +20,12 @@ public interface Container {
      * @param <T> the type of the value
      * @throws NullPointerException if the {@code key} is {@code null}
      * @throws NullPointerException if the {@code value} is {@code null}
-     * @return the new {@code value} associated with {@code key}
+     * @throws IllegalArgumentException if the {@code value} is not an instance of the {@code key} type
+     * @return the previous associated {@code value} with {@code key}, or
+     *         {@code null} if there was no associated {@code value} for
+     *         {@code key}
      */
-    <T> T put(Class<T> key, Object value) throws NullPointerException;
+    <T> T put(Class<T> key, Object value) throws NullPointerException, IllegalArgumentException;
 
     /**
      * Removes the value associated to the given key from this container if present.

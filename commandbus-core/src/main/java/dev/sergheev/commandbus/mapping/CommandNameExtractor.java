@@ -29,8 +29,8 @@ public class CommandNameExtractor {
      */
     public List<String> extractCommandNamesFor(Class<?> givenClass) {
         requireNonNull(givenClass, "givenClass must not be null");
-        List<String> commandNames = new LinkedList<>();
-        List<CommandMapping> mappings = mappingExtractor.extractMappingsFrom(givenClass);
+        final List<String> commandNames = new LinkedList<>();
+        final List<CommandMapping> mappings = mappingExtractor.extractMappingsFrom(givenClass);
         mappings.forEach(mapping -> commandNames.add(mapping.value().getName()));
         return commandNames;
     }

@@ -115,8 +115,8 @@ public class SimpleCommandBusBuilder {
      * @return a new {@link SimpleCommandBus} instance configured accordingly.
      */
     public SimpleCommandBus build() {
-        CommandHandlerRegistry handlerRegistry;
-        boolean hasCustomRegistry = !Objects.isNull(customRegistry);
+        final CommandHandlerRegistry handlerRegistry;
+        final boolean hasCustomRegistry = !Objects.isNull(customRegistry);
         if(hasCustomRegistry) {
             handlerRegistry = customRegistry;
         } else if(isConcurrent) {
@@ -125,7 +125,7 @@ public class SimpleCommandBusBuilder {
             handlerRegistry = CommandHandlerRegistryFactory.newRegistry();
         }
         classToInstance.forEach(handlerRegistry::registerHandler);
-        CommandHandlerFinder commandHandlerFinder = new SimpleCommandHandlerFinder(handlerRegistry);
+        final CommandHandlerFinder commandHandlerFinder = new SimpleCommandHandlerFinder(handlerRegistry);
         return new SimpleCommandBus(commandHandlerFinder);
     }
 

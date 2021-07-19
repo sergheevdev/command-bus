@@ -19,14 +19,14 @@ public class CommandMappingExtractor {
      */
     public List<CommandMapping> extractMappingsFrom(Class<?> givenClass) {
         requireNonNull(givenClass, "givenClass must not be null");
-        List<CommandMapping> foundMappings = new LinkedList<>();
+        final List<CommandMapping> foundMappings = new LinkedList<>();
         if(givenClass.isAnnotationPresent(CommandMapping.class)) {
-            CommandMapping mapping = givenClass.getAnnotation(CommandMapping.class);
+            final CommandMapping mapping = givenClass.getAnnotation(CommandMapping.class);
             foundMappings.add(mapping);
         }
         else if(givenClass.isAnnotationPresent(CommandMappings.class)) {
-            CommandMappings multiMappings = givenClass.getAnnotation(CommandMappings.class);
-            List<CommandMapping> mappingGroup = Arrays.asList(multiMappings.value());
+            final CommandMappings multiMappings = givenClass.getAnnotation(CommandMappings.class);
+            final List<CommandMapping> mappingGroup = Arrays.asList(multiMappings.value());
             foundMappings.addAll(mappingGroup);
         }
         return foundMappings;

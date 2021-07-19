@@ -67,7 +67,7 @@ public class SimpleContainer implements Container {
      * because Java is not capable of expressing this key-value relationship.
      */
     private Map<Class<?>, Object> asEmptyMap(Supplier<Map<Class<?>, Object>> mapSupplier) throws NullPointerException, IllegalArgumentException {
-        Map<Class<?>, Object> suppliedMap = mapSupplier.get();
+        final Map<Class<?>, Object> suppliedMap = mapSupplier.get();
         requireNonNull(suppliedMap, "suppliedMap must not be null");
         if(!suppliedMap.isEmpty()) throw new IllegalArgumentException("suppliedMap must be empty");
         return suppliedMap;
@@ -82,12 +82,16 @@ public class SimpleContainer implements Container {
      * @param <T> the type of the value
      * @throws NullPointerException if the {@code key} is {@code null}
      * @throws NullPointerException if the {@code value} is {@code null}
-     * @return the new {@code value} associated with {@code key}
+     * @throws IllegalArgumentException if the {@code value} is not an instance of the {@code key} type
+     * @return the previous associated {@code value} with {@code key}, or
+     *         {@code null} if there was no associated {@code value} for
+     *         {@code key}
      */
     @Override
-    public <T> T put(Class<T> key, Object value) throws NullPointerException {
+    public <T> T put(Class<T> key, Object value) throws NullPointerException, IllegalArgumentException {
         requireNonNull(key, "key must not be null");
         requireNonNull(value, "value must not be null");
+        if(!key.isInstance(value)) throw new IllegalArgumentException("The value instance must match the key type");
         return key.cast(typeToInstance.put(key, value));
     }
 

@@ -35,7 +35,7 @@ public class SimpleCommandBus implements CommandBus {
     @Override
     public <R> R execute(Command command) throws NullPointerException {
         requireNonNull(command, "command must not be null");
-        CommandHandler<Command, R> handler = commandHandlerFinder.findHandlerFor(command.getClass().getName());
+        final CommandHandler<Command, R> handler = commandHandlerFinder.findHandlerFor(command.getClass().getName());
         return handler.handle(command);
     }
 

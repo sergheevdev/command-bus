@@ -72,7 +72,7 @@ public class ConcurrentCommandHandlerRegistry implements CommandHandlerRegistry 
     public <T extends CommandHandler> T registerHandler(Class<T> type, Object instance) throws NullPointerException {
         requireNonNull(type, "type must not be null");
         requireNonNull(instance, "instance must not be null");
-        List<String> commandNames = commandNameExtractor.extractCommandNamesFor(type);
+        final List<String> commandNames = commandNameExtractor.extractCommandNamesFor(type);
         registryLock.lock();
         try {
             commandNames.forEach(name -> commandNameToType.put(name, type));
@@ -93,7 +93,7 @@ public class ConcurrentCommandHandlerRegistry implements CommandHandlerRegistry 
     @Override
     public <T extends CommandHandler> T unregisterHandler(Class<T> type) throws NullPointerException {
         requireNonNull(type, "type must not be null");
-        List<String> commandNames = commandNameExtractor.extractCommandNamesFor(type);
+        final List<String> commandNames = commandNameExtractor.extractCommandNamesFor(type);
         registryLock.lock();
         try {
             commandNames.forEach(commandNameToType::remove);
@@ -135,7 +135,7 @@ public class ConcurrentCommandHandlerRegistry implements CommandHandlerRegistry 
         requireNonNull(commandName, "commandName must not be null");
         registryLock.lock();
         try {
-            Class<? extends CommandHandler> handlerType = commandNameToType.get(commandName);
+            final Class<? extends CommandHandler> handlerType = commandNameToType.get(commandName);
             return handlerContainer.get(handlerType);
         } finally {
             registryLock.unlock();
