@@ -1,5 +1,7 @@
 package dev.sergheev.commandbus.mapping;
 
+import dev.sergheev.commandbus.Command;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,7 +33,9 @@ public class CommandNameExtractor {
         requireNonNull(givenClass, "givenClass must not be null");
         final List<String> commandNames = new LinkedList<>();
         final List<CommandMapping> mappings = mappingExtractor.extractMappingsFrom(givenClass);
-        mappings.forEach(mapping -> commandNames.add(mapping.value().getName()));
+        mappings.forEach(mapping -> {
+            if(mapping.value() != Command.class) commandNames.add(mapping.value().getName());
+        });
         return commandNames;
     }
 

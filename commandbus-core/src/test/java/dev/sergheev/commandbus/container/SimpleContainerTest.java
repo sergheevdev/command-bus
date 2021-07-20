@@ -1,6 +1,6 @@
 package dev.sergheev.commandbus.container;
 
-public class DefaultSimpleContainerTest extends AbstractSimpleContainerTest {
+public class SimpleContainerTest extends AbstractSimpleContainerTest {
 
     @Override
     public SimpleContainer createSimpleContainer() {
